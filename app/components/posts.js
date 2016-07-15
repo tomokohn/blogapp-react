@@ -1,5 +1,5 @@
 import React from 'react';
-import {Router,Route,hashHistory} from 'react-router';
+import {Router,Route,hashHistory,Link} from 'react-router';
 import SideBar from './sidebar';
 var PostData = require('../../data/posts.json');
 
@@ -12,6 +12,8 @@ class Posts extends React.Component {
     }
     this.sortPosts = this.sortPosts.bind(this);
     this.onePost = this.onePost.bind(this);
+    this.threePosts = this.threePosts.bind(this);
+    this.postsChange = this.postsChange.bind(this);
   }
 
   sortPosts(){
@@ -22,6 +24,7 @@ class Posts extends React.Component {
   }
 
   onePost(post){
+    debugger;
     const postDate = new Date(parseInt(post.date));
     const monthNames = [
       "January", "February", "March",
@@ -75,7 +78,28 @@ class Posts extends React.Component {
   }
 
   threePosts(page){
+      const tPosts =[];
+      if (page === undefined) {
+        for (var i = 0; i < 3; i++) {
+          tPosts.push(this.onePost(this.state.posts[i]));
+        }
+      } else {
+        for (var i=(page*3)-3 ; i<page*3; i++ ){
+          tPosts.push(this.onePost(this.state.posts[i]));
+        }
+      }
 
+
+    return tPosts
+  }
+
+  postsChange(direction){
+    const pageNum = this.props.params.page;
+      if (pageNum === undefined) {
+        return 'posts/2'
+      } else{
+        return `posts/${parseInt(pageNum)+direction}`
+      }
   }
 
   componentWillMount(){
@@ -83,16 +107,14 @@ class Posts extends React.Component {
   }
 
   render() {
-    console.log(this.state.posts);
+    console.log(this.props.params.page);
     return (
       <section className="col-md-8">
         <h2 className="page-header">Showing 8 posts</h2>
-        {this.onePost(this.state.posts[0])}
-        {this.onePost(this.state.posts[1])}
-        {this.onePost(this.state.posts[2])}
+        {this.threePosts(this.props.params.page)}
         <ul className="pager">
           <li className="previous">
-            <a href="#">&larr; Older</a>
+            <Link activeClassName="active" to={this.postsChange(1)}>&larr; Older</Link>
           </li>
           <li className="next">
             <a href="#">Newer &rarr;</a>

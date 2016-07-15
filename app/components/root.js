@@ -11,7 +11,9 @@ class Root extends React.Component {
       <div>
       <Router history={hashHistory}>
       <Route path="/" component={Home}>
-        <Route path="posts" component={Posts}></Route>
+        <Route path="posts" component={Posts}>
+          <Route path=":page" component={Posts}></Route>
+        </Route>
         <Route path="admin" component={Admin}></Route>
       </Route>
       </Router>
@@ -22,3 +24,4 @@ class Root extends React.Component {
 }
 
 export default Root;
+ //        <Route path=":page" component={Posts}></Route>
