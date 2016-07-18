@@ -82,3 +82,7 @@ body {
   resize: none;
   width: 100%;
 }
+
+.hidden {
+  display: none;
+}

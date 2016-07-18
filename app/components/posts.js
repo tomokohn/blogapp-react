@@ -8,7 +8,9 @@ class Posts extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      posts: PostData.posts
+      posts: PostData.posts,
+      newer:'',
+      older:''
     }
     this.sortPosts = this.sortPosts.bind(this);
     this.onePost = this.onePost.bind(this);
@@ -24,7 +26,6 @@ class Posts extends React.Component {
   }
 
   onePost(post){
-    debugger;
     const postDate = new Date(parseInt(post.date));
     const monthNames = [
       "January", "February", "March",
@@ -81,14 +82,19 @@ class Posts extends React.Component {
       const tPosts =[];
       if (page === undefined) {
         for (var i = 0; i < 3; i++) {
+          if (this.state.posts[i] === undefined) {
+            return tPosts;
+          }
           tPosts.push(this.onePost(this.state.posts[i]));
         }
       } else {
         for (var i=(page*3)-3 ; i<page*3; i++ ){
+          if (this.state.posts[i] === undefined) {
+            return tPosts;
+          }
           tPosts.push(this.onePost(this.state.posts[i]));
         }
       }
-
 
     return tPosts
   }
@@ -97,27 +103,48 @@ class Posts extends React.Component {
     const pageNum = this.props.params.page;
       if (pageNum === undefined) {
         return 'posts/2'
-      } else{
+      } else if(pageNum === 1){
+        return 'posts'
+      } else {
         return `posts/${parseInt(pageNum)+direction}`
       }
   }
 
   componentWillMount(){
     this.sortPosts()
+    // removes pager if less then 4 posts
+    if (this.state.posts.length <= 3) {
+      this.setState({
+        newer:'hidden',
+        older:'hidden'
+      })
+    }
   }
 
+  componentDidMount(){
+    if (this.props.params.page === undefined){
+      this.setState({
+        newer:'hidden'
+      })
+    } else {
+      this.setState({
+        newer:''
+      })
+    }
+  }
+
+
   render() {
-    console.log(this.props.params.page);
     return (
       <section className="col-md-8">
-        <h2 className="page-header">Showing 8 posts</h2>
+        <h2 className="page-header">Showing {this.state.posts.length} posts</h2>
         {this.threePosts(this.props.params.page)}
         <ul className="pager">
           <li className="previous">
-            <Link activeClassName="active" to={this.postsChange(1)}>&larr; Older</Link>
+            <Link className={this.state.older} to={this.postsChange(1)}>&larr; Older</Link>
           </li>
           <li className="next">
-            <a href="#">Newer &rarr;</a>
+            <Link className={this.state.newer} to={this.postsChange(-1)}>Newer &rarr;</Link>
           </li>
         </ul>
       </section>
